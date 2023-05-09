@@ -2,7 +2,7 @@ const fs = require("fs");
 const fsPromise = require("fs/promises");
 const path = require("path");
 const mergeStyles = require("../05-merge-styles/index");
-// const copyDir = require("../04-copy-directory/index.js");
+const { copyDir } = require("../04-copy-directory/src");
 
 async function createHtmlFromTemplate() {
   fs.mkdir(path.join(__dirname, "project-dist"), () => {
@@ -20,7 +20,7 @@ async function createHtmlFromTemplate() {
               fs.readFile(
                 path.resolve(__dirname, "components", component),
                 "utf-8",
-                (err, templateContent) => {
+                async (err, templateContent) => {
                   if (err) return console.log(err);
                   result = result.replace(
                     `{{${templateName}}}`,
@@ -47,7 +47,4 @@ async function createHtmlFromTemplate() {
 
 createHtmlFromTemplate();
 mergeStyles();
-// copyDir(
-//   path.join(__dirname, "assets"),
-//   path.join(__dirname, "project-dist", "assets")
-// );
+copyDir("assets", "project-dist/assets");
