@@ -2,28 +2,31 @@ const fs = require("fs");
 const fsPromise = require("fs/promises");
 const path = require("path");
 
-copyDir("files", "filesCopy");
-
 async function copyDir(srcDir, destDir) {
-  let folder = destDir;
+  srcDir = path.resolve(srcDir);
+  destDir = path.resolve(destDir);
   async function updateDirContent() {
     try {
       (await fsPromise.readdir(srcDir)).forEach(async (el) => {
-        let elPath = path.join(__dirname, srcDir, el);
+        let elPath = path.resolve(srcDir, el);
         if ((await fsPromise.stat(elPath)).isFile()) {
           let fileName = path.basename(el);
-          let filePathDest = path.resolve(__dirname, destDir, fileName);
+          let filePathDest = path.resolve(destDir, fileName);
           fs.writeFile(filePathDest, "", (err) => {
             if (err) {
               throw err;
             }
           });
-          let filePathSrc = path.resolve(__dirname, srcDir, fileName);
+          let filePathSrc = path.resolve(srcDir, fileName);
           fs.copyFile(filePathSrc, filePathDest, (err) => {
             if (err) {
               throw err;
             }
           });
+        } else {
+          let dirPathSrc = path.resolve(srcDir, el);
+          let dirPathDest = path.resolve(destDir, el);
+          copyDir(dirPathSrc, dirPathDest);
         }
       });
     } catch (err) {
@@ -31,7 +34,7 @@ async function copyDir(srcDir, destDir) {
     }
   }
 
-  fs.access(folder, fs.constants.F_OK, async (err) => {
+  fs.access(destDir, fs.constants.F_OK, async (err) => {
     if (err) {
       fsPromise
         .mkdir(destDir, { recursive: true })
@@ -44,3 +47,6 @@ async function copyDir(srcDir, destDir) {
     }
   });
 }
+copyDir("files", "filesCopy");
+
+module.exports = copyDir;
