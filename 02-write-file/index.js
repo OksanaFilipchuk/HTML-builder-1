@@ -1,10 +1,11 @@
 const fs = require("fs");
+const path = require("path");
 
 process.stdin.on("data", (data) => {
   if (data.toString().slice(0, -1) == "exit") {
     process.exit();
   } else {
-    fs.appendFile("text.txt", data, (err) => {
+    fs.appendFile(path.resolve("02-write-file", "text.txt"), data, (err) => {
       if (err) throw err;
       console.log("text is added to file text.txt");
     });
