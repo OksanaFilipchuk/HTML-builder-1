@@ -5,7 +5,19 @@ const path = require("path");
 const copyDir = async function (srcDir, destDir) {
   srcDir = path.resolve(srcDir);
   destDir = path.resolve(destDir);
+
   async function updateDirContent() {
+    fsPromise
+      .readdir(destDir)
+      .then((elements) => {
+        if (elements.length > 0) {
+          elements.forEach((el) =>
+            fsPromise.unlink(path.resolve(__dirname, destDir, el))
+          );
+        }
+      })
+      .catch((err) => console.log(err.message));
+
     try {
       (await fsPromise.readdir(srcDir)).forEach(async (el) => {
         let elPath = path.resolve(srcDir, el);
