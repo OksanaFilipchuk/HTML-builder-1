@@ -9,27 +9,27 @@ fsPromise
   .then((files) => {
     let array = [];
     files.forEach((el, index) => {
-      // console.log(el);
-      let fileSize;
-      fs.stat(
-        path.resolve("03-files-in-folder", "secret-folder", el.name),
-        (err, stats) => {
-          if (err) {
-            console.log(err);
-          } else {
-            fileSize = stats.size;
-            let obj = {
-              name: el.name,
-              isDir: el.isDirectory(),
-              ext: el.isDirectory() ? "" : path.extname(el.name),
-              size: fileSize,
-            };
-            array.push(obj);
-            if (index === files.length - 1) {
-              console.table(array);
+      if (!el.isDirectory()) {
+        let fileSize;
+        fs.stat(
+          path.resolve("03-files-in-folder", "secret-folder", el.name),
+          (err, stats) => {
+            if (err) {
+              console.log(err);
+            } else {
+              fileSize = stats.size;
+              let obj = {
+                name: el.name,
+                ext: el.isDirectory() ? "" : path.extname(el.name),
+                size: fileSize,
+              };
+              array.push(obj);
+              if (index === files.length - 1) {
+                console.table(array);
+              }
             }
           }
-        }
-      );
+        );
+      }
     });
   });
